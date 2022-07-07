@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<!-- saved from url=(0054)http://localhost/mooccal/signup/vmail?i=20210630214806 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	
+	<title>Add Email Address</title>
+	<link rel="icon" href="http://localhost/mooccal/css/img/MOOCs%20Cal%20Logo%20Circle.png" type="image/png" sizes="16x16">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Scope+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Tokyo+Zoo&display=swap" rel="stylesheet">
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body data-new-gr-c-s-check-loaded="14.1020.0" data-gr-ext-installed="">
+	<!-- <pre> -->
+		<div class="master">
+		<div class="form">
+			<form id="mailform">
+				<div class="head">
+                    <h1>Add Email Address</h1>
+                </div>
+				<div class="first" id="emailbox">
+					<label for="name">Email Address</label>
+					<br>
+					<br>
+					<input type="text" name="email" id="email" placeholder="Email Address">
+					<label class="errortext"></label>
+					<br>
+					<br>
+				</div>
+				<div class="send">
+					<button id="sendotp">Send OTP</button>
+				</div>
+				<br>
+				<br>
+			</form>
+			<form id="otpform">
+				<div class="second" id="otpbox">
+					<label for="name">OTP</label>
+					<br>
+					<br>
+					<input type="text" name="otp" id="otp" placeholder="OTP">
+					<label class="errortext"></label>
+					<br>
+					<br>
+				</div>
+				<div class="send">
+					<button class="btn" id="verifyotp" disabled="">Verify OTP</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('#sendotp').click(function(e){
+				e.preventDefault();
+
+				$('.errortext').text('');
+				$('.errortext').html('');
+				$('.errortext').css('backgroundColor', 'transparent');
+				$('.error').removeClass('error');
+
+				$('#sendotp').text('Sending OTP...');
+				var val = $('#email').serialize() + '&' + 'name=' + 'a';
+				// console.log(val);
+				$.ajax({
+					url: 	'http://localhost:80/mooccal/signup/sendotp',
+					type: 	'post',
+		 			data: 	val,
+
+		 			success: function(result) {
+		 				// console.log(result);
+						$('#sendotp').text('Send OTP');
+		 				if (result == '1') {
+			 				alert('OTP Sent');
+			 				$('#verifyotp').attr('disabled', false);
+						}
+						else if (result == '2') {
+							alert("Sorry! OTP could not be send.");
+						}
+						else {
+			 				result = JSON.parse(result);
+		 					if (result['email']) {
+		 						$('#email').addClass('error');
+		 						$('#emailbox .errortext').html('<i class="fa fa-times-circle"></i> ' + result['email']);
+		 						$('#emailbox .errortext').css('display', 'block');
+		 						$('#emailbox .errortext').css('backgroundColor', '#FFBABA');
+		 					}
+						}
+		 			}
+				});
+			});
+			$('#verifyotp').click(function(e){
+				e.preventDefault();
+
+				$('.errortext').text('');
+				$('.errortext').html('');
+				$('.errortext').css('backgroundColor', 'transparent');
+				$('.error').removeClass('error');
+
+				var val = $('#otp, #email').serialize() + '&' + 'id=' + '20210630214806';
+				// console.log(val);
+				$.ajax({
+					url: 	'http://localhost:80/mooccal/signup/verifyotp',
+					type: 	'post',
+		 			data: 	val,
+
+		 			success: function(result) {
+		 				// console.log(result);
+		 				if (result == '1') {
+			 				alert('Email Address Added Successfully');
+			 				window.location.assign('http://localhost:80/mooccal/');
+						}
+						else if (result == '2') {
+							alert("Sorry! Email Address could not be added.");
+						}
+						else if (result == '3') {
+		 					$('#otp').addClass('error');
+	 						$('#otpbox .errortext').html('<i class="fa fa-times-circle"></i> ' + 'OTP did not match.');
+	 						$('#otpbox .errortext').css('display', 'block');
+	 						$('#otpbox .errortext').css('backgroundColor', '#FFBABA');
+		 				}
+						else {
+			 				result = JSON.parse(result);
+		 					if (result['otp']) {
+		 						$('#otp').addClass('error');
+		 						$('#otpbox .errortext').html('<i class="fa fa-times-circle"></i> ' + result['otp']);
+		 						$('#otpbox .errortext').css('display', 'block');
+		 						$('#otpbox .errortext').css('backgroundColor', '#FFBABA');
+		 					}
+						}
+		 			}
+				});
+			});
+		});
+	</script>
+
+</body></html>
